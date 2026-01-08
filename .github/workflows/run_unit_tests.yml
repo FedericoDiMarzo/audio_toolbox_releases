@@ -13,7 +13,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          chmod +x scripts/*.sh
           sudo ./scripts/install_ubuntu_dependencies.sh
 
       - name: Build
