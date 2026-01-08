@@ -44,3 +44,8 @@ out/*
 
 # Build
 build/
+
+.DS_Store
+
+#bash cmd to remove all the ds store files in a directory and its subdirectories
+# find . -name .DS_Store -type f -delete
