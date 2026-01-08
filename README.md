@@ -9,6 +9,7 @@ Audio Toolbox should work on Windows, MacOS, and Linux.
 ```bash
 git clone git@github.com:FedericoDiMarzo/audio_toolbox.git
 cd audio_toolbox
+git submodule update --init --recursive
 
 # Ubuntu only dependencies are provided.
 # For other platforms, you need to figure out the dependencies manually
