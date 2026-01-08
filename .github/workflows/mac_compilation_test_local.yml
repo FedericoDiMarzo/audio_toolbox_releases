@@ -1,0 +1,19 @@
+name: mac-compilation-test
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive 
+
+      - name: Build
+        run: |
+          rm -rf build
+          cmake -S . -B build -DAT_ENABLE_MINIAUDIO=ON -DAT_ENABLE_RTMIDI=ON -DAT_BUILD_TOOLS=ON
+          cmake --build build -j

@@ -1,0 +1,22 @@
+name: ubuntu-compilation-test
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: chmod +x scripts/*.sh && sudo ./scripts/install_ubuntu_dependencies.sh
+
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DAT_ENABLE_MINIAUDIO=ON -DAT_ENABLE_RTMIDI=ON -DAT_BUILD_TOOLS=ON
+          make -j

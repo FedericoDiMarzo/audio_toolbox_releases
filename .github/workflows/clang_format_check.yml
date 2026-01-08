@@ -1,0 +1,19 @@
+name: clang-format-check
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # - name: Install clang-format
+      #   run: sudo apt install clang-format
+
+      - name: clang-format version
+        run: clang-format --version
+
+      - name: Check formatting
+        run: ./scripts/check_clang_format.sh || exit 1
