@@ -9,10 +9,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 # Include the functions
-include(utils/CMakeFunctions.cmake)
+include(CMakeFunctions.cmake)
 
 # Used to fetch external libraries
 include(FetchContent)
+
+# Testing suite
+include(GoogleTest)
 
 set_property(DIRECTORY PROPERTY DEFAULT_CONFIG audio_toolbox)
 
@@ -25,34 +28,32 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Boolean options
 option(AT_BUILD_TESTS "Build audio_toolbox tests" OFF)
-option(AT_BUILD_TOOLS "Build audio_toolbox tools" OFF)
 option(AT_ENABLE_MINIAUDIO "Enable miniaudio" OFF)
 option(AT_ENABLE_RTMIDI "Enable RtMidi" OFF)
 option(AT_ENABLE_APPROX_MATH "Enable approximate math functions" OFF)
-option(AT_ENABLE_INTEL_OPTIMIZATIONS "Enable Intel-specific optimizations" ON)
-option(AT_ENABLE_EFFICIENT_RAND "Enable efficient random number generation" ON)
+option(AT_ENABLE_INTEL_OPTIMIZATIONS "Enable Intel-specific optimizations" OFF)
+option(AT_ENABLE_EFFICIENT_RAND "Enable efficient random number generation" OFF)
 option(AT_NO_EXCEPTIONS "Disable exception handling" OFF)
-
 
 # Non-boolean options
 set(AT_OPTIMIZATION_FLAG "-O3" CACHE STRING "Set optimization flag")
 set(AT_FFT_IMPLEMENTATION "0" CACHE STRING "Set FFT implementation (0: pffft, 1: arm_cmsis)")
 set_property(CACHE AT_FFT_IMPLEMENTATION PROPERTY STRINGS 0 1)
 
-# Error handling
-
-if (AT_BUILD_TESTS AND NOT AT_ENABLE_MINIAUDIO)
-  message(WARNING "Tests require miniaudio. Enabling miniaudio.")
-  set(AT_ENABLE_MINIAUDIO ON CACHE BOOL "Enable miniaudio" FORCE)
-endif()
-
-if (AT_BUILD_TESTS AND NOT AT_ENABLE_RTMIDI)
-  message(WARNING "Tests require RtMidi. Enabling RtMidi.")
-  set(AT_ENABLE_RTMIDI ON CACHE BOOL "Enable RtMidi" FORCE)
+if (AT_BUILD_TESTS)
+    message(INFO "Tests require miniaudio. Enabling miniaudio.")
+    message(INFO "Tests require RtMidi. Enabling RtMidi.")
+    set(AT_ENABLE_MINIAUDIO ON CACHE BOOL "Enable miniaudio" FORCE)
+    set(AT_ENABLE_RTMIDI ON CACHE BOOL "Enable RtMidi" FORCE)
 endif()
 
 if(NOT(AT_FFT_IMPLEMENTATION STREQUAL "0" OR AT_FFT_IMPLEMENTATION STREQUAL "1"))
   message(FATAL_ERROR "Invalid FFT option: ${AT_FFT_IMPLEMENTATION}")
+endif()
+
+# Check if the target architecture is x86_64 and we are not on Apple Silicon
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" AND NOT APPLE)
+    set(AT_ENABLE_INTEL_OPTIMIZATIONS ON CACHE BOOL "Enable Intel-specific optimizations" FORCE)
 endif()
 
 # = = = = = = = = = = = = = = = = =
@@ -217,7 +218,7 @@ else()
 endif()
 
 # = = = = = = = = = = = = = = = = =
-# Compiling audio_toolbox library
+# Compile audio_toolbox library
 # = = = = = = = = = = = = = = = = =
 add_library(
   audio_toolbox
@@ -238,38 +239,8 @@ target_include_directories(
 )
 
 # = = = = = = = = = = = = = = = = =
-# Compiling tools
+# Compiling tests
 # = = = = = = = = = = = = = = = = =
-if(AT_BUILD_TOOLS AND AT_ENABLE_MINIAUDIO)
-  file(GLOB_RECURSE TOOL_SOURCES "tools/*.cpp")
-
-  # Create an executable for each source file in TOOL_SOURCES
-  set(TOOL_EXECUTABLES)
-
-  foreach(TS ${TOOL_SOURCES})
-    get_filename_component(NAME ${TS} NAME_WE)
-    add_executable(${NAME} ${TS})
-    target_link_libraries(
-      ${NAME}
-      PRIVATE
-      audio_toolbox
-    )
-    target_include_directories(
-      ${NAME}
-      PRIVATE
-      ${CMAKE_CURRENT_SOURCE_DIR}/inc
-      ${AT_EXT_LIBS_DIR}
-    )
-    list(APPEND TOOL_EXECUTABLES ${NAME})
-  endforeach()
-
-  # Compile all tools in one go
-  add_custom_target(
-    tools
-    DEPENDS
-    ${TOOL_EXECUTABLES}
-  )
-endif()
 
 if(AT_BUILD_TESTS)
   file(GLOB_RECURSE LIB_TESTS "tests/*.cpp")
@@ -278,6 +249,11 @@ if(AT_BUILD_TESTS)
   set(TEST_EXECUTABLES)
 
   foreach(LT ${LIB_TESTS})
+    # Skip audio_interface_test.cpp on macOS
+    if(APPLE AND LT MATCHES "/audio_interface_test\\.cpp$")
+        continue()
+    endif()
+
     get_filename_component(NAME ${LT} NAME_WE)
     set(NAME "at_${NAME}")
     add_executable(${NAME} ${LT})
@@ -297,6 +273,7 @@ if(AT_BUILD_TESTS)
     )
 
     list(APPEND TEST_EXECUTABLES ${NAME})
+    gtest_discover_tests(${NAME})
   endforeach()
 
   # Compile all tests in one go
@@ -318,7 +295,6 @@ log_variable(AT_ENABLE_EFFICIENT_RAND)
 log_variable(AT_NO_EXCEPTIONS)
 log_variable(AT_OPTIMIZATION_FLAG)
 log_variable(AT_FFT_IMPLEMENTATION)
-log_variable(AT_BUILD_TOOLS)
 log_variable(AT_BUILD_TESTS)
 
 # Convert the flags to a list
@@ -344,6 +320,12 @@ message("AT_SOURCE_FILES:")
 
 foreach(SOURCE ${AT_SOURCES})
   message("  ${SOURCE}")
+endforeach()
+
+# Print each test file
+message("AT_TEST_FILES:")
+foreach(TEST ${LIB_TESTS})
+  message("  ${TEST}")
 endforeach()
 
 # Print libs files

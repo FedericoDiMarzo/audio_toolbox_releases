@@ -1,40 +1,41 @@
-#ifndef _AUDIO_TOOLBOX_MATH_H_
-#define _AUDIO_TOOLBOX_MATH_H_
+#pragma once
 
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <numeric>
 #include <string>
+#include <vector>
 
 #include "audio_toolbox/core/types.hpp"
-#include "audio_toolbox/core/utilities.hpp"
 #include "audio_toolbox/math/fast_math.hpp"
+#include "audio_toolbox/static/templates_utilities.hpp"
 
 #ifndef M_PI
-#define M_PI 3.14159265358979323846f
+    #define M_PI 3.14159265358979323846f
 #endif
-namespace audio_toolbox {
+namespace audio_toolbox
+{
 
 // Switch between std and fast_math implementations
 // by using the AT_ENABLE_APPROX_MATH flag
-inline real_type compute_sin(real_type x) noexcept;
+real_type compute_sin(real_type x) noexcept;
 
-inline real_type compute_cos(real_type x) noexcept;
+real_type compute_cos(real_type x) noexcept;
 
-inline real_type compute_tan(real_type x) noexcept;
+real_type compute_tan(real_type x) noexcept;
 
-inline real_type compute_tanh(real_type x) noexcept;
+real_type compute_tanh(real_type x) noexcept;
 
-inline real_type compute_exp(real_type x) noexcept;
+real_type compute_exp(real_type x) noexcept;
 
-inline real_type compute_sqrt(real_type x) noexcept;
+real_type compute_sqrt(real_type x) noexcept;
 
-inline real_type compute_log(real_type x) noexcept;
+real_type compute_log(real_type x) noexcept;
 
-inline real_type compute_log2(real_type x) noexcept;
+real_type compute_log2(real_type x) noexcept;
 
-inline real_type compute_pow(real_type x, real_type y) noexcept;
+real_type compute_pow(real_type x, real_type y) noexcept;
 
 /**
  * @brief Compute the decibel value of a number.
@@ -42,7 +43,7 @@ inline real_type compute_pow(real_type x, real_type y) noexcept;
  * @param x The input value.
  * @return The decibel value.
  */
-inline real_type compute_db(real_type x) noexcept;
+real_type compute_db(real_type x) noexcept;
 
 /**
  * @brief Compute the inverse decibel value of a number.
@@ -50,7 +51,7 @@ inline real_type compute_db(real_type x) noexcept;
  * @param x The input value.
  * @return The inverse decibel value.
  */
-inline real_type compute_inverse_db(real_type x) noexcept;
+real_type compute_inverse_db(real_type x) noexcept;
 
 /**
  * @brief Compute the energy of a signal in the time domain.
@@ -59,7 +60,7 @@ inline real_type compute_inverse_db(real_type x) noexcept;
  * @param n Length of the signal.
  * @return Energy of the signal.
  */
-inline real_type compute_energy(const real_type* x, uint32_t n) noexcept;
+real_type compute_energy(const real_type* x, uint32_t n) noexcept;
 
 /**
  * @brief Compute the average of a signal.
@@ -68,7 +69,7 @@ inline real_type compute_energy(const real_type* x, uint32_t n) noexcept;
  * @param n Length of the signal.
  * @return Mean of the signal.
  */
-inline real_type compute_avg(const real_type* x, uint32_t n) noexcept;
+real_type compute_avg(const real_type* x, uint32_t n) noexcept;
 
 /**
  * @brief Compute the standard deviation of a signal.
@@ -77,7 +78,7 @@ inline real_type compute_avg(const real_type* x, uint32_t n) noexcept;
  * @param n Length of the signal.
  * @return Standard deviation of the signal.
  */
-inline real_type compute_std(const real_type* x, uint32_t n) noexcept;
+real_type compute_std(const real_type* x, uint32_t n) noexcept;
 
 /**
  * @brief Compute the mean squared error between two signals.
@@ -87,8 +88,7 @@ inline real_type compute_std(const real_type* x, uint32_t n) noexcept;
  * @param n Length of the signals.
  * @return Mean squared error.
  */
-inline real_type compute_mse(const real_type* x, real_type* y,
-                             uint32_t n) noexcept;
+real_type compute_mse(const real_type* x, real_type* y, uint32_t n) noexcept;
 
 /**
  * @brief Compute the mean absolute error between two signals.
@@ -98,8 +98,7 @@ inline real_type compute_mse(const real_type* x, real_type* y,
  * @param n Length of the signals.
  * @return Mean absolute error.
  */
-inline real_type compute_mae(const real_type* x, real_type* y,
-                             uint32_t n) noexcept;
+real_type compute_mae(const real_type* x, real_type* y, uint32_t n) noexcept;
 
 /**
  * @brief Apply a gain to a signal.
@@ -110,7 +109,7 @@ inline real_type compute_mae(const real_type* x, real_type* y,
  * @param gain Linear gain.
  */
 template <typename T>
-inline void apply_gain(T* x, uint32_t n, real_type gain) noexcept;
+void apply_gain(T* x, uint32_t n, real_type gain) noexcept;
 
 /**
  * @brief Apply a gain to a signal in decibels.
@@ -121,7 +120,7 @@ inline void apply_gain(T* x, uint32_t n, real_type gain) noexcept;
  * @param gain_db Gain in decibels.
  */
 template <typename T>
-inline void apply_gain_db(T* x, uint32_t n, real_type gain_db) noexcept;
+void apply_gain_db(T* x, uint32_t n, real_type gain_db) noexcept;
 
 /**
  * @brief Linear interpolation between two values.
@@ -131,8 +130,7 @@ inline void apply_gain_db(T* x, uint32_t n, real_type gain_db) noexcept;
  * @param t Interpolation index (between 0 and 1).
  * @return Interpolated value.
  */
-inline real_type linear_interpolation(real_type x0, real_type x1,
-                                      real_type t) noexcept;
+real_type linear_interpolation(real_type x0, real_type x1, real_type t) noexcept;
 /**
  * @brief Clip a value to a maximum value.
  *
@@ -140,7 +138,7 @@ inline real_type linear_interpolation(real_type x0, real_type x1,
  * @param max Maximum value.
  * @return real_type
  */
-inline real_type clip_max(real_type x, real_type max) noexcept;
+real_type clip_max(real_type x, real_type max) noexcept;
 
 /**
  * @brief Clip a value to a minimum value.
@@ -149,7 +147,7 @@ inline real_type clip_max(real_type x, real_type max) noexcept;
  * @param min Minimum value.
  * @return real_type
  */
-inline real_type clip_min(real_type x, real_type min) noexcept;
+real_type clip_min(real_type x, real_type min) noexcept;
 
 /**
  * @brief Clip a value to a range.
@@ -159,7 +157,7 @@ inline real_type clip_min(real_type x, real_type min) noexcept;
  * @param max Maximum value.
  * @return real_type
  */
-inline real_type clip(real_type x, real_type min, real_type max) noexcept;
+real_type clip(real_type x, real_type min, real_type max) noexcept;
 
 /**
  * @brief Compute the bin index from a frequency.
@@ -169,8 +167,7 @@ inline real_type clip(real_type x, real_type min, real_type max) noexcept;
  * @param fft_size Length of the FFT.
  * @return Bin index.
  */
-inline uint32_t compute_bin_from_freq(real_type freq, uint32_t sample_rate,
-                                      uint32_t fft_size) noexcept;
+uint32_t compute_bin_from_freq(real_type freq, uint32_t sample_rate, uint32_t fft_size) noexcept;
 
 /**
  * @brief Compute the gain at a given frequency.
@@ -181,9 +178,7 @@ inline uint32_t compute_bin_from_freq(real_type freq, uint32_t sample_rate,
  * @param fft_size Size of the FFT.
  * @return Linear gain.
  */
-inline real_type compute_gain_at_freq(const real_type* x, real_type freq,
-                                      uint32_t sample_rate,
-                                      uint32_t fft_size) noexcept;
+real_type compute_gain_at_freq(const real_type* x, real_type freq, uint32_t sample_rate, uint32_t fft_size) noexcept;
 
 /**
  * @brief Map a value from one range to another.
@@ -195,8 +190,7 @@ inline real_type compute_gain_at_freq(const real_type* x, real_type freq,
  * @param y_max Higher bound of the output range.
  * @return Mapped value.
  */
-inline real_type linear_map(real_type x, real_type x_min, real_type x_max,
-                            real_type y_min, real_type y_max) noexcept;
+real_type linear_map(real_type x, real_type x_min, real_type x_max, real_type y_min, real_type y_max) noexcept;
 
 /**
  * @brief Compute the time constant of the exponential
@@ -206,8 +200,7 @@ inline real_type linear_map(real_type x, real_type x_min, real_type x_max,
  * @param period Update period in seconds.
  * @return Alpha value.
  */
-inline real_type alpha_from_time_const(real_type tao,
-                                       real_type period) noexcept;
+real_type alpha_from_time_const(real_type tao, real_type period) noexcept;
 
 /**
  * @brief Exponential smoothing.
@@ -217,8 +210,7 @@ inline real_type alpha_from_time_const(real_type tao,
  * @param alpha Smoothing factor.
  * @return Smoothed output.
  */
-inline real_type exponential_smoothing(real_type x, real_type y_last,
-                                       real_type alpha) noexcept;
+real_type exponential_smoothing(real_type x, real_type y_last, real_type alpha) noexcept;
 
 /**
  * @brief Compute the exponential moving average of a signal.
@@ -228,8 +220,7 @@ inline real_type exponential_smoothing(real_type x, real_type y_last,
  * @param n Length of the signals.
  * @param alpha Smoothing factor.
  */
-inline void compute_ema(const real_type* x, real_type* y, uint32_t n,
-                        real_type alpha) noexcept;
+void compute_ema(const real_type* x, real_type* y, uint32_t n, real_type alpha) noexcept;
 
 /**
  * @brief Compute the absolute value of a signal.
@@ -240,7 +231,7 @@ inline void compute_ema(const real_type* x, real_type* y, uint32_t n,
  * @param n Length of the signal.
  */
 template <typename T>
-inline void compute_abs(const T* x, T* y, uint32_t n) noexcept;
+void compute_abs(const T* x, T* y, uint32_t n) noexcept;
 
 /**
  * @brief Compute the maximum value of a signal.
@@ -252,7 +243,7 @@ inline void compute_abs(const T* x, T* y, uint32_t n) noexcept;
  * @return Maximum value.
  */
 template <typename T>
-inline real_type compute_max(T* x, uint32_t n) noexcept;
+real_type compute_max(T* x, uint32_t n) noexcept;
 
 /**
  * @brief Compute the minimum value of a signal.
@@ -264,7 +255,7 @@ inline real_type compute_max(T* x, uint32_t n) noexcept;
  * @return Minimum value.
  */
 template <typename T>
-inline real_type compute_min(T* x, uint32_t n) noexcept;
+real_type compute_min(T* x, uint32_t n) noexcept;
 
 /**
  * @brief Apply a peak normalization to a signal.
@@ -276,49 +267,27 @@ inline real_type compute_min(T* x, uint32_t n) noexcept;
  * @param peak Peak value.
  */
 template <typename T>
-inline void apply_peak_normalization(const T* x, T* y, uint32_t n,
-                                     real_type peak = 1.0f) noexcept;
-
-/**
- * @brief Check if a number is a power of two.
- *
- * @param n Number to check.
- * @return True if the number is a power of two, false otherwise.
- */
-constexpr bool is_power_of_two(uint32_t n);
-
-/**
- * @brief Compute the next power of two.
- *
- * This function works by first decrementing the input value v, then repeatedly
- * "smearing" the highest set bit to the right until all bits to the right of
- * the highest set bit are also set. Finally, it increments v to reach the next
- * power of two.
- *
- * @param v Input value.
- * @return Next power of two.
- */
-constexpr uint32_t next_power_of_two(uint32_t v);
+void apply_peak_normalization(const T* x, T* y, uint32_t n, real_type peak = 1.0f) noexcept;
 
 /**
  * @brief Compute a range of integers.
  *
- * @tparam N Length of the sequence.
+ * @tparam T Type of the integers.
  * @param start First integer (included).
+ * @param end Last integer (excluded).
  * @return Sequence of integers.
  */
-template <uint32_t N>
-std::array<uint32_t, N> compute_int_range(uint32_t start);
+template <typename T>
+std::vector<T> create_int_range(T start, T end);
 
 /**
  * @brief Compute the Hann window.
  *
- * @tparam N Length of the window.
+ * @param n Length of the window.
  * @param apply_sqrt Apply the square root to the window.
  * @return Hann window.
  */
-template <uint32_t N>
-std::array<real_type, N> hann_window(bool apply_sqrt = false);
+std::vector<real_type> hann_window(uint32_t n, bool apply_sqrt = false) noexcept;
 
 /**
  * @brief Implements the frequency prewarping to compensate the bilinear
@@ -328,8 +297,7 @@ std::array<real_type, N> hann_window(bool apply_sqrt = false);
  * @param sample_rate Sample rate of the filter in Hz.
  * @return Digital cutoff frequency compensated for the bilinear transform.
  */
-inline real_type frequency_prewarping(real_type cutoff_freq,
-                                      real_type sample_rate) noexcept;
+real_type frequency_prewarping(real_type cutoff_freq, real_type sample_rate) noexcept;
 
 /**
  * @brief Maps a value between 0 and 1 to an exponential curve.
@@ -340,11 +308,8 @@ inline real_type frequency_prewarping(real_type cutoff_freq,
  * @param max Maximum value of the potentiometer.
  * @return Mapped value.
  */
-inline real_type exponential_mapping(real_type x, real_type min,
-                                     real_type max) noexcept;
+real_type exponential_mapping(real_type x, real_type min, real_type max) noexcept;
 
-}  // namespace audio_toolbox
+} // namespace audio_toolbox
 
 #include "audio_toolbox/math/math_imp.hpp"
-
-#endif  // _AUDIO_TOOLBOX_MATH_H_
