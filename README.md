@@ -4,16 +4,18 @@ A C++ library to simplify the development of audio processing applications.
 
 ## Installation
 
-Audio Toolbox should work on Windows, MacOS, and Linux.
+Audio Toolbox should work on Windows, MacOS, and Linux. Check out the dependecy list inside `linux_dependencies.txt` for more details.
 
 ```bash
 git clone git@github.com:FedericoDiMarzo/audio_toolbox.git
 cd audio_toolbox
-git submodule update --init --recursive
 
-# Ubuntu only dependencies are provided.
-# For other platforms, you need to figure out the dependencies manually
-./scripts/install_ubuntu_dependencies.sh
+# Checkout to a specific version if you want a reliable build
+git checkout vX.Y.Z
+
+# Install pre-commit hooks (optional but recommended)
+python3 -m pip install pre-commit
+pre-commit install
 ```
 
 ## Building the Project
@@ -37,9 +39,8 @@ cmake .. -D<OPTION_NAME>=<VALUE>
 You can set the following options:
 
 ```bash
-# Whether to build the tests and tools
+# Whether to build the tests
 AT_BUILD_TESTS=ON|OFF
-AT_BUILD_TOOLS=ON|OFF
 
 # Enables Miniaudio as audio backend
 AT_ENABLE_MINIAUDIO=ON|OFF
@@ -67,20 +68,12 @@ AT_OPTIMIZATION_FLAG=<optimization_flag>
 AT_FFT_IMPLEMENTATION=0|1
 ```
 
-## Running one of the tools
-
-```bash
-cmake .. -DAT_BUILD_TOOLS=ON
-make -j
-./bin/<name_of_the_tool>
-```
-
 ## Running all the unit tests
 
 ```bash
 cmake .. -DAT_BUILD_TESTS=ON
 make -j
-for x in ./bin/*_test; do $x || exit 1; done
+ctest --output-on-failure
 ```
 
 ## Aknowledgements

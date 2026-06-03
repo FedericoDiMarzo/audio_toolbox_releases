@@ -1,0 +1,3 @@
+cmake 
+alsa-base 
+libasound2-dev

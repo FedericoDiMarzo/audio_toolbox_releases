@@ -1,18 +1,19 @@
-#ifndef _AUDIO_TOOLBOX_MIDI_H_
-#define _AUDIO_TOOLBOX_MIDI_H_
+#pragma once
 
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
 
 #include "audio_toolbox/core/types.hpp"
-#include "audio_toolbox/core/utilities.hpp"
 #include "audio_toolbox/math/math.hpp"
 #include "audio_toolbox/midi/midi_parser.hpp"
 #include "audio_toolbox/midi/midi_token.hpp"
-
+#include "audio_toolbox/static/macros.hpp"
+#include "audio_toolbox/static/templates_utilities.hpp"
 using namespace audio_toolbox;
-namespace audio_toolbox {
+
+namespace audio_toolbox
+{
 
 /**
  * @brief Check if a MIDI event is of a certain type.
@@ -46,45 +47,44 @@ inline bool midi_event_is_from_cc(MidiToken& event, uint8_t cc_number);
  */
 // TODO: LOGARIHTMIC SCALING
 
-class MidiCCParameter {
-  real_type min, max;
-  uint8_t cc_number;
-  uint8_t new_value;
-  uint8_t last_value;
+class MidiCCParameter
+{
+    real_type min, max;
+    uint8_t cc_number;
+    uint8_t new_value;
+    uint8_t last_value;
 
- public:
-  AT_DISABLE_COPY_AND_MOVE_M(MidiCCParameter);
+  public:
+    AT_DISABLE_COPY_AND_MOVE_M(MidiCCParameter);
 
-  /**
-   * @brief Construct a new Midi C C Parameter object.
-   *
-   * @param cc_number CC number to be read.
-   * @param min Minimum value mapped to the parameter.
-   * @param max Maximum value mapped to the parameter.
-   */
-  MidiCCParameter(uint8_t cc_number, real_type min, real_type max);
+    /**
+     * @brief Construct a new Midi C C Parameter object.
+     *
+     * @param cc_number CC number to be read.
+     * @param min Minimum value mapped to the parameter.
+     * @param max Maximum value mapped to the parameter.
+     */
+    MidiCCParameter(uint8_t cc_number, real_type min, real_type max);
 
-  /**
-   * @brief Update the parameter value with the latest CC message.
-   *
-   * @tparam C MIDI tokens container of MidiTokens.
-   * @param midi_tokens Current MIDI tokens.
-   */
-  template <typename C>
-  inline void update(C& midi_tokens);
+    /**
+     * @brief Update the parameter value with the latest CC message.
+     *
+     * @tparam C MIDI tokens container of MidiTokens.
+     * @param midi_tokens Current MIDI tokens.
+     */
+    template <typename C>
+    inline void update(C& midi_tokens);
 
-  /**
-   * @brief Get the value of the parameter.
-   *
-   * @return Value of the parameter.
-   */
-  inline real_type get();
+    /**
+     * @brief Get the value of the parameter.
+     *
+     * @return Value of the parameter.
+     */
+    inline real_type get();
 };
 
 using MidiCCDispatcher = UpdateDispatcher<MidiCCParameter>;
 
-}  // namespace audio_toolbox
+} // namespace audio_toolbox
 
 #include "audio_toolbox/midi/midi_imp.hpp"
-
-#endif  // _AUDIO_TOOLBOX_MIDI_H_
