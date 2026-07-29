@@ -1,0 +1,32 @@
+name: unit-tests
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: 
+          - [self-hosted, macOS]
+          - [self-hosted, Linux]
+  
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          clean: true
+          
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          rm -rf ../build/*
+          cmake .. -DAT_BUILD_TESTS=ON
+          make -j
+
+      - name: Run tests
+        run: |
+          cd build
+          ctest --output-on-failure
