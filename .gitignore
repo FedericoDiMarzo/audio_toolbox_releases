@@ -44,5 +44,3 @@ out/*
 
 # Build
 build/
-
-.DS_Store
